@@ -458,7 +458,7 @@ class Main(newSchedStack):
         self.logger.debug("a"*32)
         self.logger.debug(self.stack.to_json(codebuild_env_vars,double_quotes=True))
         self.logger.debug("a"*32)
-        self.logger.debug(self.stack.to_json(codebuild_env_vars,b64=True,double_quotes=True))
+        self.logger.debug(self.stack.to_json(codebuild_env_vars,b64encode=True,double_quotes=True))
         self.logger.debug("a"*32)
         raise Exception("testtest105")
 
