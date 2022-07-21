@@ -460,7 +460,7 @@ class Main(newSchedStack):
         self.logger.debug("a"*32)
         self.logger.debug(self.stack.to_json(codebuild_env_vars,b64encode=True,double_quotes=True))
         self.logger.debug("a"*32)
-        raise Exception("testtest105")
+        raise Exception("testtest106")
 
         overide_values["codebuild_env_vars_hash"] = self.stack.b64_encode(json.dumps(codebuild_env_vars))
         if self.stack.cloud_tags_hash: overide_values["cloud_tags_hash"] = self.stack.cloud_tags_hash
