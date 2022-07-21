@@ -452,6 +452,9 @@ class Main(newSchedStack):
 
         overide_values = { "docker_registry": self.stack.docker_registry }
         overide_values["ssm_params_hash"] = self.stack.b64_encode(ssm_params)
+        self.logger.debug(self.stack.b64_encode(json.dumps(codebuild_env_vars)))
+        self.logger.debug(self.stack.b64_encode(codebuild_env_vars))
+        self.logger.debug(self.stack.b64_encode(str(codebuild_env_vars)))
         overide_values["codebuild_env_vars_hash"] = self.stack.b64_encode(json.dumps(codebuild_env_vars))
         if self.stack.cloud_tags_hash: overide_values["cloud_tags_hash"] = self.stack.cloud_tags_hash
 
