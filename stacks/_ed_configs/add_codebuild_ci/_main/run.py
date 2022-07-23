@@ -432,8 +432,6 @@ class Main(newSchedStack):
 
     def run_codebuild(self):
 
-        import json
-
         self.stack.init_variables()
         self._set_ssm_keys()
 
@@ -453,17 +451,7 @@ class Main(newSchedStack):
         overide_values = { "docker_registry": self.stack.docker_registry }
         overide_values["ssm_params_hash"] = self.stack.b64_encode(ssm_params)
 
-        #self.logger.debug("a"*32)
-        #self.logger.debug(json.dumps(codebuild_env_vars))
-        #self.logger.debug("a"*32)
-        #self.logger.debug(self.stack.to_str(codebuild_env_vars))
-        #self.logger.debug("a"*32)
-        self.logger.debug("a"*32)
-        self.logger.debug(self.stack.to_str(codebuild_env_vars,double_quotes=True))
-        self.logger.debug("a"*32)
-        #raise Exception("testtest106")
-
-        overide_values["codebuild_env_vars_hash"] = self.stack.b64_encode(self.stack.to_str(codebuild_env_vars,double_quotes=True))
+        overide_values["codebuild_env_vars_hash"] = self.stack.b64_encode(codebuild_env_vars)
         if self.stack.cloud_tags_hash: overide_values["cloud_tags_hash"] = self.stack.cloud_tags_hash
 
         # using tmp bucket for logs
