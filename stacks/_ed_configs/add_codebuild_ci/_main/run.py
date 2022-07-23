@@ -130,9 +130,9 @@ class Main(newSchedStack):
 
         self._sshdeploy()
         self._token()
-        self._s3()
         self.stack.unset_parallel()
 
+        self._s3()
         self._dynamodb()
 
         return self._webhook()
