@@ -227,23 +227,10 @@ class Main(newSchedStack):
         inputargs["automation_phase"] = "continuous_delivery"
         inputargs["human_description"] = 'Upload private ssh key to ssm'
 
-        # testtest109
-
-        self.logger.debug("a1"*32)
-        self.logger.debug("a1"*32)
-        self.logger.debug("a1"*32)
-    
         self.stack.aws_ssm_param.insert(display=True,**inputargs)
 
-        self.logger.debug("a2"*32)
-        self.logger.debug("a2"*32)
-        self.logger.debug("a2"*32)
         # add docker token
         docker_token = self.stack.inputvars.get("docker_token")
-        self.logger.debug("a3"*32)
-        self.logger.debug("a3"*32)
-        self.logger.debug("a3"*32)
-        self.logger.debug("a3"*32)
 
         if docker_token:
 
@@ -260,9 +247,6 @@ class Main(newSchedStack):
     
             self.stack.aws_ssm_param.insert(display=True,**inputargs)
 
-        self.logger.debug("a4"*32)
-        self.logger.debug("a4"*32)
-        self.logger.debug("a4"*32)
         # add slack_webhook_hash
         slack_webhook_hash = self.stack.inputvars.get("slack_webhook_hash")
 
@@ -281,9 +265,6 @@ class Main(newSchedStack):
     
             self.stack.aws_ssm_param.insert(display=True,**inputargs)
 
-        self.logger.debug("a5"*32)
-        self.logger.debug("a5"*32)
-        self.logger.debug("a5"*32)
         return True
 
     def _get_s3_bucket(self):
