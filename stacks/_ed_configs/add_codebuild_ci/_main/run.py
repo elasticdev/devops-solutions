@@ -232,6 +232,9 @@ class Main(newSchedStack):
         # add docker token
         docker_token = self.stack.inputvars.get("docker_token")
 
+        if not docker_token: 
+            docker_token = self.stack.inputvars.get("DOCKER_TOKEN")
+
         if docker_token:
 
             default_values = { "aws_default_region":self.stack.aws_default_region }
