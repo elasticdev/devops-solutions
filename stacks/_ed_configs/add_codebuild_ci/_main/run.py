@@ -238,8 +238,7 @@ class Main(newSchedStack):
         if not docker_token: 
             docker_token = self.stack.inputvars.get("DOCKERHUB_TOKEN")
 
-        self.stack.logger.debug(self.stack.inputvars)
-        raise Exception(self.stack.inputvars)
+        #raise Exception(self.stack.inputvars)
 
         if docker_token:
 
