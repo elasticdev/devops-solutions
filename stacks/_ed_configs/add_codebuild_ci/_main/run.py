@@ -232,15 +232,24 @@ class Main(newSchedStack):
         # add docker token
         docker_token = self.stack.inputvars.get("docker_token")
 
+        self.stack.logger.debug('a0'*32)
+        self.stack.logger.debug(docker_token)
+
         if not docker_token: 
             docker_token = self.stack.inputvars.get("DOCKER_TOKEN")
+            self.stack.logger.debug('a1'*32)
+            self.stack.logger.debug(docker_token)
 
         if not docker_token: 
             docker_token = self.stack.inputvars.get("DOCKERHUB_TOKEN")
+            self.stack.logger.debug('a2'*32)
+            self.stack.logger.debug(docker_token)
 
         #raise Exception(self.stack.inputvars)
 
         if docker_token:
+
+            self.stack.logger.debug('a3'*32)
 
             default_values = { "aws_default_region":self.stack.aws_default_region }
 
@@ -254,6 +263,8 @@ class Main(newSchedStack):
             inputargs["human_description"] = 'Upload docker token to ssm'
     
             self.stack.aws_ssm_param.insert(display=True,**inputargs)
+
+        raise Exception(docker_token)
 
         # add slack_webhook_hash
         slack_webhook_hash = self.stack.inputvars.get("slack_webhook_hash")
