@@ -238,8 +238,6 @@ class Main(newSchedStack):
         if not docker_token: 
             docker_token = self.stack.inputvars.get("DOCKERHUB_TOKEN")
 
-        #raise Exception(self.stack.inputvars)
-
         if docker_token:
 
             default_values = { "aws_default_region":self.stack.aws_default_region }
