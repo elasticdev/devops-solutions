@@ -196,6 +196,19 @@ class Main(newSchedStack):
     
         return self.stack.new_github_ssh_key.insert(display=True,**inputargs)
 
+    def _set_docker_token(self):
+
+        docker_token = self.stack.inputvars.get("docker_token")
+        if docker_token: return docker_token
+
+        docker_token = self.stack.inputvars.get("DOCKER_TOKEN")
+        if docker_token: return docker_token
+
+        docker_token = self.stack.inputvars.get("DOCKERHUB_TOKEN")
+        if docker_token: return docker_token
+
+        return 
+
     def run_ssm(self):
 
         self.stack.init_variables()
@@ -230,20 +243,12 @@ class Main(newSchedStack):
         self.stack.aws_ssm_param.insert(display=True,**inputargs)
 
         # add docker token
-        docker_token = self.stack.inputvars.get("docker_token")
-
-        if not docker_token: 
-            docker_token = self.stack.inputvars.get("DOCKER_TOKEN")
-
-        if not docker_token: 
-            docker_token = self.stack.inputvars.get("DOCKERHUB_TOKEN")
-
-        if docker_token:
+        if self.stack.docker_token:
 
             default_values = { "aws_default_region":self.stack.aws_default_region }
 
             overide_values = { "ssm_key": self.stack.ssm_docker_token,
-                               "ssm_value": docker_token }
+                               "ssm_value": self.stack.docker_token }
 
             inputargs = { "default_values":default_values,
                           "overide_values":overide_values }
@@ -396,7 +401,10 @@ class Main(newSchedStack):
         self.stack.set_variable("ssm_ssh_key","/codebuild/{}/sshkeys/private".format(self.stack.codebuild_name))
         self.stack.set_variable("ssm_callback_token","/codebuild/{}/ed/callback_token".format(self.stack.codebuild_name))
 
-        if self.stack.inputvars.get("docker_token"):
+        docker_token = self._set_docker_token()
+        self.stack.set_variable("docker_token",docker_token)
+
+        if self.stack.docker_token:
             self.stack.set_variable("ssm_docker_token","/codebuild/{}/ed/docker_token".format(self.stack.codebuild_name))
 
         if self.stack.inputvars.get("slack_webhook_hash"):
