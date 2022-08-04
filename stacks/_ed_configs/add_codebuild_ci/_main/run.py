@@ -198,15 +198,12 @@ class Main(newSchedStack):
 
     def _set_docker_token(self):
 
-        self.stack.logger.debug("testtest10a"*5)
         docker_token = self.stack.inputvars.get("docker_token")
         if docker_token: return docker_token
 
-        self.stack.logger.debug("testtest10b"*5)
         docker_token = self.stack.inputvars.get("DOCKER_TOKEN")
         if docker_token: return docker_token
 
-        self.stack.logger.debug("testtest10c"*5)
         docker_token = self.stack.inputvars.get("DOCKERHUB_TOKEN")
         if docker_token: return docker_token
 
@@ -399,6 +396,7 @@ class Main(newSchedStack):
     def _set_ssm_keys(self):
 
         self.stack.set_variable("ssm_docker_token",None)
+        self.stack.set_variable("docker_token",None)
         self.stack.set_variable("ssm_slack_webhook_hash",None)
 
         self.stack.set_variable("ssm_ssh_key","/codebuild/{}/sshkeys/private".format(self.stack.codebuild_name))
@@ -406,13 +404,8 @@ class Main(newSchedStack):
 
         docker_token = self._set_docker_token()
 
-        self.stack.logger.debug("testtest10"*5)
-        self.stack.logger.debug(docker_token)
-        self.stack.logger.debug("testtest10"*5)
-
-        self.stack.set_variable("docker_token",docker_token)
-
-        if self.stack.docker_token:
+        if docker_token:
+            self.stack.set_variable("docker_token",docker_token)
             self.stack.set_variable("ssm_docker_token","/codebuild/{}/ed/docker_token".format(self.stack.codebuild_name))
 
         if self.stack.inputvars.get("slack_webhook_hash"):
