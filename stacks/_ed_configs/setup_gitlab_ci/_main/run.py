@@ -431,7 +431,6 @@ gitlab-runner restart
         sched.job = "runner_manager"
         sched.archive.timeout = 1200
         sched.archive.timewait = 120
-        sched.conditions.retries = 1 
         sched.automation_phase = "infrastructure"
         sched.human_description = "Create gitlab manager vm"
         self.add_schedule()
