@@ -19,12 +19,12 @@ class Main(newSchedStack):
         self.parse.add_required(key="instance_type",default="t3.micro") 
         self.parse.add_required(key="disksize",default="20") 
 
-        self.parse.add_required(key="gitlab_runners_token_hash")
-        #self.parse.add_required(key="gitlab_runners_ami",default="ami-0d75513e7706cf2d9")  # ubuntu 22.04 lts eu-west-1
-        #self.parse.add_required(key="gitlab_runners_ami",default="ami-0f93e856d36a101f8")  # ubuntu 20.04 lts eu-west-1
-        self.parse.add_required(key="gitlab_runners_ami",default="ami-0f03fd8a6e34800c0") # ubuntu 18.04 lts
         self.parse.add_required(key="gitlab_runner_aws_access_key")
         self.parse.add_required(key="gitlab_runner_aws_secret_key")
+        self.parse.add_required(key="gitlab_runners_token_hash")
+        self.parse.add_required(key="gitlab_runners_ami",default="ami-0f03fd8a6e34800c0") # ubuntu 18.04 lts
+        #self.parse.add_required(key="gitlab_runners_ami",default="ami-0d75513e7706cf2d9")  # ubuntu 22.04 lts eu-west-1
+        #self.parse.add_required(key="gitlab_runners_ami",default="ami-0f93e856d36a101f8")  # ubuntu 20.04 lts eu-west-1
 
         self.parse.add_optional(key="gitlab_runner_autoscaling_hash",default="null")
 
@@ -380,52 +380,52 @@ gitlab-runner restart
     def run(self):
     
         self.stack.unset_parallel()
-        #self.add_job("sshkey")
-        #self.add_job("s3")
-        #self.add_job("iam")
-        #self.add_job("subgroup")
+        self.add_job("sshkey")
+        self.add_job("s3")
+        self.add_job("iam")
+        self.add_job("subgroup")
         self.add_job("runner_manager")
 
         return self.finalize_jobs()
 
     def schedule(self):
 
-        #sched = self.new_schedule()
-        #sched.job = "subgroup"
-        #sched.archive.timeout = 1800
-        #sched.archive.timewait = 120
-        #sched.conditions.retries = 1 
-        #sched.automation_phase = "infrastructure"
-        #sched.human_description = 'Create Gitlab subgroup'
-        #sched.on_success = [ "s3" ]
-        #self.add_schedule()
+        sched = self.new_schedule()
+        sched.job = "subgroup"
+        sched.archive.timeout = 1800
+        sched.archive.timewait = 120
+        sched.conditions.retries = 1 
+        sched.automation_phase = "infrastructure"
+        sched.human_description = 'Create Gitlab subgroup'
+        sched.on_success = [ "s3" ]
+        self.add_schedule()
 
-        #sched = self.new_schedule()
-        #sched.job = "s3"
-        #sched.archive.timeout = 1200
-        #sched.archive.timewait = 120
-        #sched.automation_phase = "infrastructure"
-        #sched.human_description = "Create s3 buckets"
-        #sched.on_success = [ "iam" ]
-        #self.add_schedule()
+        sched = self.new_schedule()
+        sched.job = "s3"
+        sched.archive.timeout = 1200
+        sched.archive.timewait = 120
+        sched.automation_phase = "infrastructure"
+        sched.human_description = "Create s3 buckets"
+        sched.on_success = [ "iam" ]
+        self.add_schedule()
 
-        #sched = self.new_schedule()
-        #sched.job = "iam"
-        #sched.archive.timeout = 1800
-        #sched.archive.timewait = 120
-        #sched.automation_phase = "infrastructure"
-        #sched.human_description = "Create IAM credentials"
-        #sched.on_success = [ "sshkey" ]
-        #self.add_schedule()
+        sched = self.new_schedule()
+        sched.job = "iam"
+        sched.archive.timeout = 1800
+        sched.archive.timewait = 120
+        sched.automation_phase = "infrastructure"
+        sched.human_description = "Create IAM credentials"
+        sched.on_success = [ "sshkey" ]
+        self.add_schedule()
 
-        #sched = self.new_schedule()
-        #sched.job = "sshkey"
-        #sched.archive.timeout = 1200
-        #sched.archive.timewait = 120
-        #sched.automation_phase = "infrastructure"
-        #sched.on_success = [ "runner_manager" ]
-        #sched.human_description = "Upload user public ssh key"
-        #self.add_schedule()
+        sched = self.new_schedule()
+        sched.job = "sshkey"
+        sched.archive.timeout = 1200
+        sched.archive.timewait = 120
+        sched.automation_phase = "infrastructure"
+        sched.on_success = [ "runner_manager" ]
+        sched.human_description = "Upload user public ssh key"
+        self.add_schedule()
 
         sched = self.new_schedule()
         sched.job = "runner_manager"
