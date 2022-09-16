@@ -35,6 +35,7 @@ class Main(newSchedStack):
         self.parse.add_required(key="aws_zone",default="a")
         self.parse.add_optional(key="cloud_tags_hash",default="null")
         self.parse.add_optional(key="bucket_acl",default="private")
+        self.parse.add_optional(key="s3_all_access",default="null")  # set true if you runner to have s3 access for all buckets as recommended by gitlab
 
         # Add substack
         self.stack.add_substack('elasticdev:::gitlab_subgroup')
@@ -250,14 +251,20 @@ gitlab-runner restart
                    "Statement": [ { "Effect": "Allow",
                                     "Action": "ec2:*",
                                               "Resource": "*"
-                                    },
-                                  { "Effect": "Allow",
-                                    "Action": [ "s3:*" ],
-                                    "Resource": [ "arn:aws:s3:::{}".format(s3_bucket), 
-                                                  "arn:aws:s3:::{}/*".format(s3_bucket) ]
-                                    }
-                                  ]
-                   }
+                                    } ] }
+
+        if self.stack.s3_all_access:
+            s3_access = { "Effect": "Allow",
+                          "Action": [ "s3:*" ],
+                          "Resource": "*" }
+        else:
+            s3_access = { "Effect": "Allow",
+                          "Action": [ "s3:*" ],
+                          "Resource": [ "arn:aws:s3:::{}".format(s3_bucket), 
+                                        "arn:aws:s3:::{}/*".format(s3_bucket) ]
+                          }
+
+        policy["Statement"].append(s3_access)
 
         return self.stack.b64_encode(policy)
 
