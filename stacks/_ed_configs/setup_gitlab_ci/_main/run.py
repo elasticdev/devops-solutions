@@ -18,6 +18,7 @@ class Main(newSchedStack):
         self.parse.add_required(key="bastion_sg_id",default="null")
         self.parse.add_required(key="instance_type",default="t3.micro") 
         self.parse.add_required(key="disksize",default="20") 
+        self.parse.add_required(key="root_size",default="20") 
 
         self.parse.add_required(key="gitlab_runner_aws_access_key")
         self.parse.add_required(key="gitlab_runner_aws_secret_key")
@@ -32,7 +33,7 @@ class Main(newSchedStack):
         self.parse.add_optional(key="suffix_length",default="4")  
 
         self.parse.add_optional(key="aws_default_region",default="us-west-1")
-        self.parse.add_required(key="aws_zone",default="a")
+        self.parse.add_required(key="aws_zone",default="b")  # make sure this is valid availability zone
         self.parse.add_optional(key="cloud_tags_hash",default="null")
         self.parse.add_optional(key="bucket_acl",default="private")
         self.parse.add_optional(key="s3_all_access",default="null")  # set true if you runner to have s3 access for all buckets as recommended by gitlab
@@ -76,6 +77,7 @@ class Main(newSchedStack):
                            "amazonec2-tags=gitlab-runner-autoscaler,gitlab,group-runner,{}".format(self.stack.ci_environment),
                            "amazonec2-security-group={}".format(self.stack.sg_id.split("sg-")[1]),
                            "amazonec2-instance-type={}".format(self.stack.instance_type),
+                           "amazonec2-root-size={}".format(self.stack.root_size),
                            "amazonec2-request-spot-instance=true",
                            "amazonec2-spot-price={}".format(self.stack.spot_price)
                            ]
@@ -106,12 +108,18 @@ class Main(newSchedStack):
     
         if autoscaling: return autoscaling
     
-        autoscaling = [ { "Periods": [ "* * 1-23 * * mon-sun *"],
-                          "IdleCount": 1,
+        autoscaling = [ { "IdleCount": 1,
                           "IdleTime": 60,
                           "Timezone": "UTC"
                           }
                         ]
+
+        #autoscaling = [ { "Periods": [ "* * 1-23 * * mon-sun *"],
+        #                  "IdleCount": 1,
+        #                  "IdleTime": 60,
+        #                  "Timezone": "UTC"
+        #                  }
+        #                ]
     
         return autoscaling
     
@@ -127,6 +135,7 @@ class Main(newSchedStack):
                    "docker": { "tls_verify": False,
                                "image": self.stack.runner_docker_image,
                                "privileged": True,
+                               "volumes": ["/var/run/docker.sock:/var/run/docker.sock", "/cache"],
                                "disable_cache": True,
                                "shm_size": 0
                                },
@@ -140,7 +149,12 @@ class Main(newSchedStack):
     
         values = { "concurrent": int(self.stack.runner_concurrent),
                    "check_interval": 0,
-                   "runners": [ runner ]
+                   "listen_address": ":8080",
+                   "log_level": "info",
+                   "log_format": "json",
+                   "runners": [ runner ],
+                   "session_server": [ {"listen_address":"0.0.0.0:8093",
+                                        "session_timeout": 1800 } ]
                    }
     
         with open(self.stack.gitlab_runner_config_file,"w") as _f:
@@ -178,15 +192,16 @@ gitlab-runner restart
 
 sleep 5 
 
-#gitlab-runner register \
-#          --non-interactive \
-#          --executor "docker+machine" \
-#          --docker-image {} \
-#          --url "https://gitlab.com/" \
-#          --registration-token "{}" \
-#          --maintenance-note "Free-form maintainer notes about this runner" \
-#          --locked="false" \
-#          --access-level="not_protected"
+gitlab-runner register --config /etc/gitlab-runner/config.toml \
+          --non-interactive \
+          --url "https://gitlab.com/" \
+          --executor "docker+machine" \
+          --name gitlab-runner-autoscaler \
+          --docker-image {} \
+          --registration-token "{}" \
+          --maintenance-note "Free-form maintainer notes about this runner" \
+          --locked="false" \
+          --access-level="not_protected"
 
 gitlab-runner restart
 
