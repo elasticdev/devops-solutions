@@ -200,9 +200,9 @@ gitlab-runner register --config /etc/gitlab-runner/config.toml \
           --url "https://gitlab.com/" \
           --executor "docker+machine" \
           --name gitlab-runner-autoscaler \
+          --docker-volumes "/var/run/docker.sock:/var/run/docker.sock" \
           --docker-image {} \
-          --registration-token "{}",
-          --docker-volumes "/var/run/docker.sock:/var/run/docker.sock"
+          --registration-token "{}" 
 
 gitlab-runner restart
 
