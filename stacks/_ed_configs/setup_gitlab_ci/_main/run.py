@@ -11,6 +11,7 @@ class Main(newSchedStack):
 
         #self.parse.add_required(key="runner_docker_image",default="alpine")
         self.parse.add_required(key="runner_docker_image",default="ubuntu")
+        self.parse.add_required(key="autoscale_limit",default="4")
         self.parse.add_required(key="runner_concurrent",default="4")
         self.parse.add_required(key="spot_price",default="0.004")
         self.parse.add_required(key="vpc_id")
@@ -25,12 +26,10 @@ class Main(newSchedStack):
         self.parse.add_required(key="gitlab_runner_aws_secret_key")
         self.parse.add_required(key="gitlab_runners_token_hash")
         self.parse.add_required(key="gitlab_runners_ami",default="ami-07b63aa1cfd3bc3a5")  # ubuntu 18.04 lts
-
-        # ami-0f03fd8a6e34800c0 = ubuntu 18.04 lts
-        # ami-0d2a4a5d69e46ea0b = ubuntu 20.04 lts
-        #self.parse.add_required(key="gitlab_runners_ami",default="ami-0d75513e7706cf2d9")  # ubuntu 22.04 lts eu-west-1
-        #self.parse.add_required(key="gitlab_runners_ami",default="ami-0f93e856d36a101f8")  # ubuntu 20.04 lts eu-west-1
-
+        # ami-0f03fd8a6e34800c0 = ubuntu 18.04 lts eu-west-1
+        # ami-0d2a4a5d69e46ea0b = ubuntu 20.04 lts eu-west-1
+        # ami-0d75513e7706cf2d9 - ubuntu 22.04 lts eu-west-1
+        # ami-0f93e856d36a101f8 - ubuntu 20.04 lts eu-west-1
         self.parse.add_optional(key="gitlab_runner_autoscaling_hash",default="null")
 
         self.parse.add_optional(key="suffix_id",default="null")
@@ -135,7 +134,7 @@ class Main(newSchedStack):
                    "url": "https://gitlab.com/",
                    "token": self.stack.b64_decode(self.stack.gitlab_runners_token_hash),
                    "executor": "docker+machine",
-                   "limit": 4,
+                   "limit": int(self.stack.autoscale_limit),
                    "docker": { "tls_verify": False,
                                "image": self.stack.runner_docker_image,
                                "privileged": True,
