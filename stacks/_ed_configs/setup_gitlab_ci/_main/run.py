@@ -9,7 +9,8 @@ class Main(newSchedStack):
         self.parse.add_required(key="parent_id",default="null")
         self.parse.add_required(key="visibility_level",default="public")
 
-        self.parse.add_required(key="runner_docker_image",default="alpine")
+        #self.parse.add_required(key="runner_docker_image",default="alpine")
+        self.parse.add_required(key="runner_docker_image",default="ubuntu")
         self.parse.add_required(key="runner_concurrent",default="4")
         self.parse.add_required(key="spot_price",default="0.004")
         self.parse.add_required(key="vpc_id")
@@ -23,7 +24,10 @@ class Main(newSchedStack):
         self.parse.add_required(key="gitlab_runner_aws_access_key")
         self.parse.add_required(key="gitlab_runner_aws_secret_key")
         self.parse.add_required(key="gitlab_runners_token_hash")
-        self.parse.add_required(key="gitlab_runners_ami",default="ami-0f03fd8a6e34800c0") # ubuntu 18.04 lts
+        self.parse.add_required(key="gitlab_runners_ami",default="ami-07b63aa1cfd3bc3a5")  # ubuntu 18.04 lts
+
+        # ami-0f03fd8a6e34800c0 = ubuntu 18.04 lts
+        # ami-0d2a4a5d69e46ea0b = ubuntu 20.04 lts
         #self.parse.add_required(key="gitlab_runners_ami",default="ami-0d75513e7706cf2d9")  # ubuntu 22.04 lts eu-west-1
         #self.parse.add_required(key="gitlab_runners_ami",default="ami-0f93e856d36a101f8")  # ubuntu 20.04 lts eu-west-1
 
@@ -149,12 +153,12 @@ class Main(newSchedStack):
     
         values = { "concurrent": int(self.stack.runner_concurrent),
                    "check_interval": 0,
-                   "listen_address": ":8080",
-                   "log_level": "info",
-                   "log_format": "json",
+                   "log_level": "debug",
+                   "log_format": "text",
                    "runners": [ runner ],
-                   "session_server": [ {"listen_address":"0.0.0.0:8093",
-                                        "session_timeout": 1800 } ]
+                   "listen_address": ":8080",
+                   "session_server": { "listen_address":"0.0.0.0:8093",
+                                       "session_timeout": 1800 }
                    }
     
         with open(self.stack.gitlab_runner_config_file,"w") as _f:
@@ -198,10 +202,8 @@ gitlab-runner register --config /etc/gitlab-runner/config.toml \
           --executor "docker+machine" \
           --name gitlab-runner-autoscaler \
           --docker-image {} \
-          --registration-token "{}" \
-          --maintenance-note "Free-form maintainer notes about this runner" \
-          --locked="false" \
-          --access-level="not_protected"
+          --registration-token "{}",
+          --docker-volumes "/var/run/docker.sock:/var/run/docker.sock"
 
 gitlab-runner restart
 
